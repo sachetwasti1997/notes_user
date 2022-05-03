@@ -14,7 +14,9 @@ import java.util.function.Function
 @Service
 class JsonWebTokenUtility {
 
-    private val SECRET_KEY = "$2a$10MvvxNxkiYLBvzVu97APmQ.UA3rm.qwQIRWizYVOYG7gAFWMOnK/q6"
+    private val SECRET_KEY = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYWNoZXRfd2FzdGkxIiwiaWF0IjoxNjUxNTY2MjU5LCJleHAiOjE2NTE2MDIyNTl9.g1-bbXatc8ZXliQQkvHOHwHHt-9ny_Zbf-fcfSp4DLIYvr8EL4-H-7VrUyAbUb9H$2a$10RC2UTyJmSgT0gzWLJc39auH6flxqF1o1PZpaMJxq1RVnsnYSPXDw2"
+
+//    private val SECRET_KEY = "abceyJhbGciOiJIUzM4NCJ9eyJzdWIiOiJzYWNoZXRfd2FzdGkxIiwiaWF0IjoxNjUxNTY2MjU5LCJleHAiOjE2NTE2MDIyNTl9"
 
     fun extractUsername(token: String?): String {
         return extractClaim(token) { obj: Claims -> obj.subject }
@@ -60,6 +62,10 @@ class JsonWebTokenUtility {
 
     fun validateToken(token: String?, userModel: User): Boolean {
         val username = extractUsername(token)
+        println("$username username")
+        println("$userModel validate")
+        println(username == userModel.userName)
+        println(!isTokenExpired(token))
         return username == userModel.userName && !isTokenExpired(token)
     }
 }

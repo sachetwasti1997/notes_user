@@ -21,8 +21,9 @@ class SecurityConfig(
     = serverHttpSecurity
         .authorizeExchange()
         .pathMatchers(HttpMethod.POST, "/v1/notes/user").permitAll()
-        .pathMatchers(HttpMethod.POST, "/v1/notes/user/login/username").permitAll()
+        .pathMatchers(HttpMethod.POST, "/v1/notes/user/login").permitAll()
         .pathMatchers(HttpMethod.GET, "/v1/notes/user/{userId}").hasRole("USER")
+        .pathMatchers(HttpMethod.GET, "/v1/notes/user/me").hasRole("USER")
         .and()
         .httpBasic().disable()
         .formLogin().disable()

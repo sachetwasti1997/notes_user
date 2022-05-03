@@ -16,7 +16,10 @@ class UserRepository(
 
     suspend fun findUserByUserName(userName: String): User? {
         val query = Query(Criteria.where("userName").`is`(userName))
-        return reactiveMongoTemplate.find(query, User::class.java).awaitFirstOrNull()
+        println(query)
+        val user = reactiveMongoTemplate.find(query, User::class.java).awaitFirstOrNull()
+        println(user)
+        return user
     }
 
     suspend fun findUserById(userId: String): User? {
@@ -30,7 +33,6 @@ class UserRepository(
     }
 
     suspend fun saveUser(user: User): User {
-
         return reactiveMongoTemplate.save(user).awaitFirst()
     }
 

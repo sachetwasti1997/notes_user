@@ -16,7 +16,8 @@ class AuthenticationManager(
     suspend fun createAuthentication(authentication: Authentication?): Authentication?{
         val token: String? = authentication!!.credentials as String?
         val userName = jsonWebTokenUtility.extractUsername(token)
-        val user = repository.findUserByUserName(userName) ?: return null
+        println(userName)
+        val user = repository.findUserByUserName(userName) ?: throw Exception("User Not Found")
         return if (jsonWebTokenUtility.validateToken(token, userModel = user)){
             authentication
         }else{
