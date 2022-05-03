@@ -1,4 +1,4 @@
-package com.example.notes_user
+package com.sachet.notes_user
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
