@@ -3,6 +3,7 @@ package com.sachet.notes_user.controller
 import com.sachet.notes_user.model.Notes
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,29 +22,39 @@ class NotesRelatedService(
 ) {
 
     @GetMapping("/user/{userId}")
-    fun getNotesByUserId(@PathVariable userId: String): Flux<Notes> {
-            return webClient
+    suspend fun getNotesByUserId(@PathVariable userId: String): List<Notes> =
+            webClient
                 .get()
                 .uri("http://localhost:8081/notes/$userId")
                 .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToFlux<Notes>()
-
-
-    }
+                .awaitExchange {
+                    it.awaitBody()
+                }
 
     @PostMapping("/save")
-    fun saveNotesOfUser(@RequestBody @Valid notes: Mono<Notes>): Mono<Notes>{
-            return webClient
+    suspend fun saveNotesOfUser(@RequestBody @Valid notes: Mono<Notes>): Notes =
+        webClient
                 .post()
                 .uri("http://localhost:8081/notes/save")
                 .body(notes)
-                .retrieve()
-                .bodyToMono<Notes>()
-                .doOnError {
-                    println(it.message)
-                    throw it
+                .awaitExchange {
+                    it.awaitBody()
                 }
-    }
 
+    @GetMapping("/single/{noteId}")
+    suspend fun getNotesById(@PathVariable noteId: String): Notes =
+        webClient
+            .get()
+            .uri("http://localhost:8081/notes/single/$noteId")
+            .awaitExchange {
+                it.awaitBody()
+            }
+    @DeleteMapping("/{noteId}")
+    suspend fun deleteNoteById(@PathVariable noteId: String): String =
+        webClient
+            .delete()
+            .uri("http://localhost:8081/notes/$noteId")
+            .awaitExchange {
+                it.awaitBody()
+            }
 }
