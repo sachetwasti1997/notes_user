@@ -1,6 +1,7 @@
 package com.sachet.notes_user.controller
 
 import com.sachet.notes_user.model.Notes
+import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -27,9 +28,8 @@ class NotesRelatedService(
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux<Notes>()
-                .doOnError {
-                    throw it
-                }
+
+
     }
 
     @PostMapping("/save")

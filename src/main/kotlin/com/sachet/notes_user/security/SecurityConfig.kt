@@ -24,6 +24,7 @@ class SecurityConfig(
         .pathMatchers(HttpMethod.POST, "/v1/notes/user/login").permitAll()
         .pathMatchers(HttpMethod.GET, "/v1/notes/user/{userId}").hasRole("USER")
         .pathMatchers(HttpMethod.GET, "/v1/notes/user/me").hasRole("USER")
+        .pathMatchers(HttpMethod.GET, "/note/user/{userId}").hasRole("USER")
         .and()
         .httpBasic().disable()
         .formLogin().disable()
