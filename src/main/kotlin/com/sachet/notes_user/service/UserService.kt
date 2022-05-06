@@ -17,7 +17,6 @@ class UserService(
 ) {
 
     suspend fun saveUser(user: User): User? {
-        println(user)
         val userChecked = findUserByUserName(user.userName!!)
         if (userChecked != null){
             throw Exception("User with the userName already exist")

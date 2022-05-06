@@ -6,7 +6,6 @@ import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -16,10 +15,7 @@ class UserRepository(
 
     suspend fun findUserByUserName(userName: String): User? {
         val query = Query(Criteria.where("userName").`is`(userName))
-        println(query)
-        val user = reactiveMongoTemplate.find(query, User::class.java).awaitFirstOrNull()
-        println(user)
-        return user
+        return reactiveMongoTemplate.find(query, User::class.java).awaitFirstOrNull()
     }
 
     suspend fun findUserById(userId: String): User? {

@@ -50,11 +50,9 @@ class NotesRelatedService(
             .awaitExchange {
                 val status = it.statusCode()
                 if (status.is4xxClientError){
-                    println(status.reasonPhrase)
                     throw Exception(status.reasonPhrase)
                 }
                 if (status.is5xxServerError){
-                    println(status.reasonPhrase)
                     throw Exception(status.reasonPhrase)
                 }
                 val body = it.awaitEntity<Any>()

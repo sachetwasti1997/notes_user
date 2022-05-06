@@ -62,10 +62,6 @@ class JsonWebTokenUtility {
 
     fun validateToken(token: String?, userModel: User): Boolean {
         val username = extractUsername(token)
-        println("$username username")
-        println("$userModel validate")
-        println(username == userModel.userName)
-        println(!isTokenExpired(token))
         return username == userModel.userName && !isTokenExpired(token)
     }
 }
