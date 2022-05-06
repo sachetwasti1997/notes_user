@@ -3,6 +3,7 @@ package com.sachet.notes_user.controller
 import com.sachet.notes_user.model.Notes
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -42,13 +43,24 @@ class NotesRelatedService(
                 }
 
     @GetMapping("/single/{noteId}")
-    suspend fun getNotesById(@PathVariable noteId: String): Notes =
+    suspend fun getNotesById(@PathVariable noteId: String): ResponseEntity<Any> =
         webClient
             .get()
             .uri("http://localhost:8081/notes/single/$noteId")
             .awaitExchange {
-                it.awaitBody()
+                val status = it.statusCode()
+                if (status.is4xxClientError){
+                    println(status.reasonPhrase)
+                    throw Exception(status.reasonPhrase)
+                }
+                if (status.is5xxServerError){
+                    println(status.reasonPhrase)
+                    throw Exception(status.reasonPhrase)
+                }
+                val body = it.awaitEntity<Any>()
+                body
             }
+
     @DeleteMapping("/{noteId}")
     suspend fun deleteNoteById(@PathVariable noteId: String): String =
         webClient
