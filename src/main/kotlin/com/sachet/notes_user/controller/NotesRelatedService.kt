@@ -1,10 +1,8 @@
 package com.sachet.notes_user.controller
 
 import com.sachet.notes_user.model.Notes
-import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.*
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.security.Principal
 import javax.validation.Valid
@@ -25,12 +22,13 @@ class NotesRelatedService(
 ) {
 
     @GetMapping("/user")
-    suspend fun getNotesByUserId(userIdAuth: Principal): List<Notes> = webClient
+    suspend fun getNotesByUserId(userIdAuth: Principal): ResponseEntity<Any> = webClient
             .get()
             .uri("http://localhost:8081/notes/${userIdAuth.name}")
             .accept(MediaType.APPLICATION_JSON)
             .awaitExchange {
-                it.awaitBody()
+                val entity = it.awaitEntity<Any>()
+                entity
             }
 
     @PostMapping("/save")
@@ -49,13 +47,6 @@ class NotesRelatedService(
             .get()
             .uri("http://localhost:8081/notes/single/$noteId")
             .awaitExchange {
-                val status = it.statusCode()
-                if (status.is4xxClientError){
-                    throw Exception(status.reasonPhrase)
-                }
-                if (status.is5xxServerError){
-                    throw Exception(status.reasonPhrase)
-                }
                 val body = it.awaitEntity<Any>()
                 body
             }
