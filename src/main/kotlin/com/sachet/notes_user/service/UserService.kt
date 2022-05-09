@@ -25,6 +25,8 @@ class UserService(
         return userRepository.saveUser(user)
     }
 
+    private suspend fun findUserByUserName(userName: String): User? = userRepository.findUserByUserName(userName)
+
     suspend fun loginUser(loginRequest: LoginRequest): String{
         val user = userRepository.findUserByUserName(loginRequest.userName)
             ?: throw Exception("No User Found: Invalid credentials")
@@ -34,8 +36,8 @@ class UserService(
         else throw Exception("No User Found: Invalid credentials")
     }
 
-    suspend fun findUserByUserName(userName: String): User? {
-        return userRepository.findUserByUserName(userName)
+    suspend fun findUserById(userId: String): User? {
+        return userRepository.findUserById(userId)
     }
 
 }

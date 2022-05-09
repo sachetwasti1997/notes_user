@@ -32,4 +32,7 @@ class NotesUserController(
     @PostMapping("/login")
     suspend fun login(@RequestBody @Valid loginRequest: LoginRequest) = userService.loginUser(loginRequest)
 
+    @GetMapping("/profile")
+    suspend fun getUser(principal: Principal) = userService.findUserById(principal.name)
+
 }

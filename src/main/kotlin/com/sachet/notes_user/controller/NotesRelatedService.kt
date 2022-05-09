@@ -1,6 +1,7 @@
 package com.sachet.notes_user.controller
 
 import com.sachet.notes_user.model.Notes
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -32,14 +33,17 @@ class NotesRelatedService(
             }
 
     @PostMapping("/save")
-    suspend fun saveNotesOfUser(@RequestBody @Valid notes: Mono<Notes>): Notes =
-        webClient
-                .post()
-                .uri("http://localhost:8081/notes/save")
-                .body(notes)
-                .awaitExchange {
-                    it.awaitBody()
-                }
+    suspend fun saveNotesOfUser(principal: Principal, @RequestBody @Valid notes: Mono<Notes>): Notes {
+        val notesToSave = notes.awaitSingle()
+        notesToSave.userId = principal.name
+        return webClient
+            .post()
+            .uri("http://localhost:8081/notes/save")
+            .bodyValue(notesToSave)
+            .awaitExchange {
+                it.awaitBody()
+            }
+    }
 
     @GetMapping("/single/{noteId}")
     suspend fun getNotesById(@PathVariable noteId: String): ResponseEntity<Any> =

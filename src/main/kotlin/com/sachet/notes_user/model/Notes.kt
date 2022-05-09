@@ -11,7 +11,7 @@ data class Notes(
     @field:NotNull(message = "Description cannot be null")
     val description: String ?= null,
     @field:NotNull(message = "UserId cannot be null")
-    val userId:  String ?= null,
+    var userId:  String ?= null,
     val color: Int ?= null,
     var localDateTime: String ?= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"))
 )
