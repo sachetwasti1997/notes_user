@@ -27,5 +27,5 @@ data class User(
     var userName: String? = null,
     @field:NotNull(message = "Password cannot be null")
     var password: String? = null,
-    var roles: List<String> ?= null
+    var roles: List<String> ?= listOf("ROLE_USER")
 )

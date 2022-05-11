@@ -1,5 +1,7 @@
 package com.sachet.notes_user.service
 
+import com.sachet.notes_user.errors.UserNameAlreadyTaken
+import com.sachet.notes_user.errors.UserNotFoundError
 import com.sachet.notes_user.model.LoginRequest
 import com.sachet.notes_user.repository.UserRepository1
 import com.sachet.notes_user.model.User
@@ -19,7 +21,7 @@ class UserService(
     suspend fun saveUser(user: User): User? {
         val userChecked = findUserByUserName(user.userName!!)
         if (userChecked != null){
-            throw Exception("User with the userName already exist")
+            throw UserNameAlreadyTaken("User with the userName already exist")
         }
         user.password = bCryptPasswordEncoder.encode(user.password)
         return userRepository.saveUser(user)
@@ -29,11 +31,11 @@ class UserService(
 
     suspend fun loginUser(loginRequest: LoginRequest): String{
         val user = userRepository.findUserByUserName(loginRequest.userName)
-            ?: throw Exception("No User Found: Invalid credentials")
+            ?: throw UserNotFoundError("No User Found: Invalid credentials")
         if(bCryptPasswordEncoder.matches(loginRequest.password, user.password)){
             return jsonWebTokenUtility.generateToken(user)
         }
-        else throw Exception("No User Found: Invalid credentials")
+        else throw UserNotFoundError("No User Found: Invalid credentials")
     }
 
     suspend fun findUserById(userId: String): User? {

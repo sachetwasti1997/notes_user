@@ -1,11 +1,10 @@
 package com.sachet.notes_user.controller
 
 import com.fasterxml.jackson.annotation.JsonView
-import com.sachet.notes_user.model.LoginRequest
-import com.sachet.notes_user.model.User
-import com.sachet.notes_user.model.Views
+import com.sachet.notes_user.model.*
 import com.sachet.notes_user.service.UserService
 import kotlinx.coroutines.reactor.awaitSingle
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,15 +21,18 @@ class NotesUserController(
     private val userService: UserService
 ) {
 
-    @PostMapping
-    @JsonView(Views.Base::class)
-    suspend fun signUp(@RequestBody @Valid userMono: Mono<User>): User?{
+    @PostMapping("/save")
+    suspend fun signUp(@RequestBody @Valid userMono: Mono<User>): ResponseEntity<SignUpResponse>{
         val user = userMono.awaitSingle()
-        return userService.saveUser(user)
+        userService.saveUser(user)
+        return ResponseEntity.ok().body(SignUpResponse(message = "User Created Successfully!", code = 200))
     }
 
     @PostMapping("/login")
-    suspend fun login(@RequestBody @Valid loginRequest: LoginRequest) = userService.loginUser(loginRequest)
+    suspend fun login(@RequestBody @Valid loginRequest: LoginRequest): ResponseEntity<LoginResponse>{
+        val token = userService.loginUser(loginRequest)
+        return ResponseEntity.ok().body(LoginResponse(token = token, code = 200))
+    }
 
     @GetMapping("/profile")
     suspend fun getUser(principal: Principal) = userService.findUserById(principal.name)

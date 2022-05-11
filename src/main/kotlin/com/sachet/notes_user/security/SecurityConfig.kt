@@ -20,7 +20,7 @@ class SecurityConfig(
     fun springSecurityFilterChain(serverHttpSecurity: ServerHttpSecurity): SecurityWebFilterChain
     = serverHttpSecurity
         .authorizeExchange()
-        .pathMatchers(HttpMethod.POST, "/v1/notes/user").permitAll()
+        .pathMatchers(HttpMethod.POST, "/v1/notes/user/save").permitAll()
         .pathMatchers(HttpMethod.POST, "/v1/notes/user/login").permitAll()
         .pathMatchers(HttpMethod.GET, "/v1/notes/user/{userId}").hasRole("USER")
         .pathMatchers(HttpMethod.GET, "/v1/notes/user/me").hasRole("USER")
