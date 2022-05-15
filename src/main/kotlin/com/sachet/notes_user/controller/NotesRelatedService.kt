@@ -1,6 +1,7 @@
 package com.sachet.notes_user.controller
 
 import com.sachet.notes_user.model.Notes
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -23,19 +24,23 @@ class NotesRelatedService(
 ) {
 
     @GetMapping("/user")
-    suspend fun getNotesByUserId(userIdAuth: Principal): ResponseEntity<Any> = webClient
+    suspend fun getNotesByUserId(userIdAuth: Principal): ResponseEntity<Any> {
+        return webClient
             .get()
             .uri("http://localhost:8081/notes/${userIdAuth.name}")
             .accept(MediaType.APPLICATION_JSON)
             .awaitExchange {
                 val entity = it.awaitEntity<Any>()
+//                delay(1000)
                 entity
             }
+    }
 
     @PostMapping("/save")
     suspend fun saveNotesOfUser(principal: Principal, @RequestBody @Valid notes: Mono<Notes>): Notes {
         val notesToSave = notes.awaitSingle()
         notesToSave.userId = principal.name
+        println(notesToSave.userId)
         return webClient
             .post()
             .uri("http://localhost:8081/notes/save")
@@ -56,11 +61,13 @@ class NotesRelatedService(
             }
 
     @DeleteMapping("/{noteId}")
-    suspend fun deleteNoteById(@PathVariable noteId: String): String =
+    suspend fun deleteNoteById(@PathVariable noteId: String): ResponseEntity<Any> =
         webClient
             .delete()
             .uri("http://localhost:8081/notes/$noteId")
             .awaitExchange {
-                it.awaitBody()
+                val mess = it.awaitEntity<Any>()
+                println(mess)
+                mess
             }
 }

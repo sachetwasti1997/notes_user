@@ -25,10 +25,15 @@ class AuthenticationManager(
     }
 
     override fun authenticate(authentication: Authentication?): Mono<Authentication> {
-        return if (authentication != null){
-            mono { createAuthentication(authentication) }
-        }else{
-            Mono.empty()
+        try {
+            return if (authentication != null){
+                mono { createAuthentication(authentication) }
+            }else{
+                Mono.empty()
+            }
+        }catch (ex: Exception){
+            println(ex.message)
+            throw Exception()
         }
     }
 

@@ -3,6 +3,7 @@ package com.sachet.notes_user.controller
 import com.fasterxml.jackson.annotation.JsonView
 import com.sachet.notes_user.model.*
 import com.sachet.notes_user.service.UserService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -31,6 +32,7 @@ class NotesUserController(
     @PostMapping("/login")
     suspend fun login(@RequestBody @Valid loginRequest: LoginRequest): ResponseEntity<LoginResponse>{
         val token = userService.loginUser(loginRequest)
+//        delay(1000)
         return ResponseEntity.ok().body(LoginResponse(token = token, code = 200))
     }
 

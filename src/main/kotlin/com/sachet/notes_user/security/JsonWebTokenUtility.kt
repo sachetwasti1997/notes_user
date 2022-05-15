@@ -1,10 +1,16 @@
 package com.sachet.notes_user.security
 
+import com.sachet.notes_user.errors.UserUnauthorisedException
 import com.sachet.notes_user.model.User
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.stereotype.Service
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
+import org.springframework.web.multipart.MultipartHttpServletRequest
+import org.springframework.web.server.ServerWebExchange
 import java.util.*
 import java.util.function.Function
 
@@ -32,16 +38,26 @@ class JsonWebTokenUtility {
     }
 
     private fun extractAllClaims(token: String?): Claims {
-        val secretKey = Keys.hmacShaKeyFor(SECRET_KEY.toByteArray())
-        return Jwts.parserBuilder()
-            .setSigningKey(secretKey)
-            .build()
-            .parseClaimsJws(token)
-            .body
+//        try {
+            val secretKey = Keys.hmacShaKeyFor(SECRET_KEY.toByteArray())
+            return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .body
+//        }catch (ex: Exception){
+//            ex.printStackTrace()
+////            val s: ServerHttpResponse = ServerWebExchange
+//            throw UserUnauthorisedException("User is Unauthorised")
+//        }
     }
 
-    private fun isTokenExpired(token: String?): Boolean {
-        return extractExpiration(token).before(Date())
+    fun isTokenExpired(token: String?): Boolean {
+        val exp = extractExpiration(token).before(Date())
+        if (exp){
+            throw Exception("Expired JWT")
+        }
+        return false
     }
 
     fun generateToken(userModel: User): String {
@@ -56,7 +72,7 @@ class JsonWebTokenUtility {
             .setSubject(userModel.userName)
             .claim("roles", userModel.roles)
             .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+            .setExpiration(Date(System.currentTimeMillis() + 1000*60*60))
             .signWith(key).compact()
     }
 
